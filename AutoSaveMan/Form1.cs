@@ -27,10 +27,10 @@ namespace AutoSaveMan
         {
             processComboBox.Items.Clear();
             processes = System.Diagnostics.Process.GetProcesses().OrderBy(p => p.MainWindowTitle).ToList();
-            processes.RemoveAll(p => p.MainWindowTitle == "");
+            //processes.RemoveAll(p => p.MainWindowTitle == "");
             foreach (var p in processes)
             {
-                processComboBox.Items.Add(p.MainWindowTitle);
+                processComboBox.Items.Add(p.ProcessName + " " + p.MainWindowTitle);
             }
         }
 
@@ -42,7 +42,7 @@ namespace AutoSaveMan
             if (!start)
             {
                 // Check
-                if(timeTextBox.Text == "") { MessageBox.Show("入力して下さい"); return; }
+                if(timeTextBox.Text == "") { MessageBox.Show("時間を入力して下さい"); return; }
                 try
                 {
                     interval = int.Parse(timeTextBox.Text);
