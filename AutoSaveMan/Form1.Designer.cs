@@ -151,6 +151,8 @@
             // countDownCheckBox
             // 
             this.countDownCheckBox.AutoSize = true;
+            this.countDownCheckBox.Checked = true;
+            this.countDownCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.countDownCheckBox.Location = new System.Drawing.Point(3, 3);
             this.countDownCheckBox.Name = "countDownCheckBox";
             this.countDownCheckBox.Size = new System.Drawing.Size(171, 34);

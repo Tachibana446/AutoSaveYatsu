@@ -13,27 +13,41 @@ namespace AutoSaveMan
 {
     public partial class Form1 : Form
     {
+        // 起動中のプロセス（更新ボタンで更新）
         List<System.Diagnostics.Process> processes = new List<System.Diagnostics.Process>();
+        // タイマーが起動中か
         bool start = false;
+        // タイマーのインターバル
         int interval = 1000;
+        // デバッグ
+        public static bool debug = false;
 
         public Form1()
         {
             InitializeComponent();
             reloadButton_Click(this, null);
+            // コマンドライン引数の二番目が"true"ならデバッグをON
+            if (System.Environment.GetCommandLineArgs()[1] == "true") debug = true;
         }
 
+        /// <summary>
+        /// プロセスの更新
+        /// </summary>
         private void reloadButton_Click(object sender, EventArgs e)
         {
             processComboBox.Items.Clear();
             processes = System.Diagnostics.Process.GetProcesses().OrderBy(p => p.MainWindowTitle).ToList();
-            //processes.RemoveAll(p => p.MainWindowTitle == "");
+            processes.RemoveAll(p => p.MainWindowTitle == "");
             foreach (var p in processes)
             {
                 processComboBox.Items.Add(p.ProcessName + " " + p.MainWindowTitle);
             }
         }
-
+        /// <summary>
+        /// ウィンドウを最前面にする
+        /// </summary>
+        /// <param name="hWnd">ウィンドウハンドル</param>
+        /// <returns></returns>
         [DllImport("user32.dll")]
         private static extern bool SetForegroundWindow(IntPtr hWnd);
 
@@ -42,11 +56,11 @@ namespace AutoSaveMan
             if (!start)
             {
                 // Check
-                if(timeTextBox.Text == "") { MessageBox.Show("時間を入力して下さい"); return; }
+                if (timeTextBox.Text == "") { MessageBox.Show("時間を入力して下さい"); return; }
                 try
                 {
                     interval = int.Parse(timeTextBox.Text);
-                    if(interval < 5)
+                    if (!debug && interval < 5)
                     {
                         MessageBox.Show("5分以上にしてください");
                         return;
@@ -65,7 +79,7 @@ namespace AutoSaveMan
                 timer1.Interval = interval * 60 * 1000;
                 timer1.Start();
                 // CountDown
-                minLabel.Text = interval.ToString().PadLeft(2,'0'); secLabel.Text = "00";
+                minLabel.Text = interval.ToString().PadLeft(2, '0'); secLabel.Text = "00";
                 CountDownTimer.Start();
 
                 start = true;
@@ -80,7 +94,9 @@ namespace AutoSaveMan
                 processComboBox.Enabled = true;
             }
         }
-
+        /// <summary>
+        /// 時間が来たら設定したプロセスのウィンドウをアクティブにしてCtrl+Sを送る
+        /// </summary>
         private void timer1_Tick(object sender, EventArgs e)
         {
             int i = processComboBox.SelectedIndex;
@@ -90,7 +106,9 @@ namespace AutoSaveMan
             // Send Key
             SendKeys.Send("^s");
         }
-
+        /// <summary>
+        /// カウントダウンタイマーの更新
+        /// </summary>
         private void CountDownTimer_Tick(object sender, EventArgs e)
         {
             int min = int.Parse(minLabel.Text);
@@ -128,7 +146,7 @@ namespace AutoSaveMan
 
         private void button1_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("製作者：@Shiso_no_ha\nこのソフトウェアによるいかなる損害に対しても製作者は責任を負いかねます。\n使用には自己責任でお願いします。");
+            MessageBox.Show("このソフトウェアによるいかなる損害に対しても製作者は責任を負いかねます。\n使用には自己責任でお願いします。");
         }
     }
 }
